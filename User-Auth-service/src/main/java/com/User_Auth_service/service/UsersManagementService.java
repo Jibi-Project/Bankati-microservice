@@ -79,31 +79,29 @@ public class UsersManagementService {
 
 
 
-
-
-    public ReqRes refreshToken(ReqRes refreshTokenReqiest){
+    public ReqRes refreshToken(ReqRes refreshTokenRequest) {
         ReqRes response = new ReqRes();
-        try{
-            String ourEmail = jwtUtils.extractUsername(refreshTokenReqiest.getToken());
-            User users = usersRepo.findByEmail(ourEmail).orElseThrow();
-            if (jwtUtils.isTokenValid(refreshTokenReqiest.getToken(), users)) {
-                var jwt = jwtUtils.generateToken(users);
+        try {
+            String ourEmail = jwtUtils.extractUsername(refreshTokenRequest.getToken());
+            User user = usersRepo.findByEmail(ourEmail).orElseThrow();
+            if (jwtUtils.isTokenValid(refreshTokenRequest.getToken(), user)) {
+                String jwt = jwtUtils.generateToken(user);
                 response.setStatutCode(200);
                 response.setToken(jwt);
-                response.setRefreshToken(refreshTokenReqiest.getToken());
+                response.setRefreshToken(refreshTokenRequest.getToken());
                 response.setExpirationTime("24Hr");
                 response.setMessage("Successfully Refreshed Token");
+            } else {
+                // Handle invalid token scenario
+                response.setStatutCode(401);
+                response.setMessage("Invalid or expired refresh token");
             }
-            response.setStatutCode(200);
-            return response;
-
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatutCode(500);
-            response.setMessage(e.getMessage());
-            return response;
+            response.setMessage("Error refreshing token: " + e.getMessage());
         }
+        return response;
     }
-
 
     public ReqRes getAllUsers() {
         ReqRes reqRes = new ReqRes();
