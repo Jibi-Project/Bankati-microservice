@@ -26,6 +26,7 @@ public class ECarteService {
         eCarte.setDateExpiration(LocalDate.now().plusYears(1));
         eCarte.setCvv(genererCvv());
         eCarte.setUser(utilisateur);
+        eCarte.setNomClient(utilisateur.getNom());
 
         return eCarteRepository.save(eCarte);
     }
