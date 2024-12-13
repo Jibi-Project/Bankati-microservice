@@ -1,4 +1,4 @@
-package com.User_Auth_service.model;
+package com.EcarteService.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,9 +29,7 @@ public class ECarte {
     @Column(nullable = false)
     private String cvv;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private String emailUtilisateur;
 
     public String getCvv() {
         return cvv;
@@ -53,10 +51,13 @@ public class ECarte {
         return numeroCarte;
     }
 
-    public User getUser() {
-        return user;
+    public String getEmailUtilisateur() {
+        return emailUtilisateur;
     }
 
+    public void setEmailUtilisateur(String emailUtilisateur) {
+        this.emailUtilisateur = emailUtilisateur;
+    }
     public void setCvv(String cvv) {
         this.cvv = cvv;
     }
@@ -77,7 +78,4 @@ public class ECarte {
         this.numeroCarte = numeroCarte;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

@@ -1,9 +1,10 @@
-package com.User_Auth_service.service;
+package com.EcarteService.service;
 
-import com.User_Auth_service.model.User;
-import com.User_Auth_service.repository.ECarteRepository;
-import com.User_Auth_service.model.ECarte;
-import com.User_Auth_service.repository.UsersRepo;
+
+import com.EcarteService.client.UserClient;
+import com.EcarteService.model.ECarte;
+import com.EcarteService.model.User;
+import com.EcarteService.repository.ECarteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,18 +15,19 @@ public class ECarteService {
 
     @Autowired
     private ECarteRepository eCarteRepository;
+
     @Autowired
-    private UsersRepo usersRepo;
+    private UserClient client;
 
     public ECarte genererECarte(String email) {
-        User utilisateur = usersRepo.findByEmail(email)
+        User utilisateur = client.findUserByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         ECarte eCarte = new ECarte();
         eCarte.setNumeroCarte(genererNumeroCarte());
         eCarte.setDateExpiration(LocalDate.now().plusYears(1));
         eCarte.setCvv(genererCvv());
-        eCarte.setUser(utilisateur);
+        eCarte.setEmailUtilisateur(utilisateur.getEmail());
         eCarte.setNomClient(utilisateur.getNom());
 
         return eCarteRepository.save(eCarte);
