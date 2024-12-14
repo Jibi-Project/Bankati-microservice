@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="EcarteService" />
         <module name="config-server" />
         <module name="transaction-service" />
         <module name="discovery" />
@@ -19,19 +20,18 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
-        <module name="EcarteService" />
         <module name="User-Auth-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="EcarteService" options="-parameters" />
+      <module name="EcarteService" options="" />
       <module name="User-Auth-service" options="-parameters" />
-      <module name="config-server" options="-parameters" />
-      <module name="discovery" options="-parameters" />
-      <module name="gateway" options="-parameters" />
-      <module name="transaction-service" options="-parameters" />
+      <module name="config-server" options="" />
+      <module name="discovery" options="" />
+      <module name="gateway" options="" />
+      <module name="transaction-service" options="" />
     </option>
   </component>
 </project>
