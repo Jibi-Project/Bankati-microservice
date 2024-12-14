@@ -37,7 +37,8 @@ public class UsersManagementService {
             ourUser.setRole(registrationRequest.getRole());
             ourUser.setNom(registrationRequest.getNom());
             ourUser.setPrenom(registrationRequest.getPrenom());
-
+            ourUser.setTelephone(registrationRequest.getTelephone());
+                //here should generate a pwd
             ourUser.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             User ourUsersResult = usersRepo.save(ourUser);
             if (ourUsersResult.getId()>0) {
@@ -165,19 +166,28 @@ public class UsersManagementService {
             Optional<User> userOptional = usersRepo.findById(userId);
             if (userOptional.isPresent()) {
                 User existingUser = userOptional.get();
-                existingUser.setEmail(updatedUser.getEmail());
-                existingUser.setNom(updatedUser.getNom());
-                existingUser.setPrenom(updatedUser.getPrenom());
 
-                existingUser.setAdresse(updatedUser.getAdresse());
-                existingUser.setRole(updatedUser.getRole());
-
-                // Check if password is present in the request
-                if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    // Encode the password and update it
-                    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                // Update fields only if they are provided (non-null or non-empty)
+                if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
+                    existingUser.setEmail(updatedUser.getEmail());
+                }
+                if (updatedUser.getNom() != null && !updatedUser.getNom().isEmpty()) {
+                    existingUser.setNom(updatedUser.getNom());
+                }
+                if (updatedUser.getPrenom() != null && !updatedUser.getPrenom().isEmpty()) {
+                    existingUser.setPrenom(updatedUser.getPrenom());
+                }
+                if (updatedUser.getTelephone() != null && !updatedUser.getTelephone().isEmpty()) {
+                    existingUser.setTelephone(updatedUser.getTelephone());
+                }
+                if (updatedUser.getAdresse() != null && !updatedUser.getAdresse().isEmpty()) {
+                    existingUser.setAdresse(updatedUser.getAdresse());
+                }
+                if (updatedUser.getRole() != null && !updatedUser.getRole().isEmpty()) {
+                    existingUser.setRole(updatedUser.getRole());
                 }
 
+                // Save the updated user
                 User savedUser = usersRepo.save(existingUser);
                 reqRes.setOurUsers(savedUser);
                 reqRes.setStatutCode(200);
@@ -215,3 +225,23 @@ public class UsersManagementService {
 
     }
 }
+/*  for later to generate pwd
+ public static String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder randomString = new StringBuilder(length);
+        Random random = new Random();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            randomString.append(characters.charAt(index));
+        }
+
+        return randomString.toString();
+    }
+
+    public static void main(String[] args) {
+        String randomString = generateRandomString(8);
+        System.out.println("Random String: " + randomString);
+    }
+*
+* */

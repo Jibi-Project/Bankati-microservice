@@ -26,6 +26,16 @@ public class ReqRes {
     private User ourUsers;
     private List<User> ourUsersList;
 
+    private String telephone;
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
     // Getters and Setters
     public int getStatutCode() {
         return statutCode;

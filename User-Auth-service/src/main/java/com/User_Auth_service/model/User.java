@@ -26,6 +26,16 @@ public class User implements UserDetails {
     private String prenom;
     private String adresse;
     private String role;
+    private String telephone;
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

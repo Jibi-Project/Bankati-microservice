@@ -49,9 +49,24 @@ public class UserController {
     }
 
     @PutMapping("/admin/update/{userId}")
-    public ResponseEntity<ReqRes> updateUser(@PathVariable Integer userId, @RequestBody User reqres){
-        return ResponseEntity.ok(usersManagementService.updateUser(userId, reqres));
+    public ResponseEntity<ReqRes> updateUser(@PathVariable Integer userId, @RequestBody User updatedUser) {
+        try {
+            ReqRes response = usersManagementService.updateUser(userId, updatedUser);
+            if (response.getStatutCode() == 200) {
+                return ResponseEntity.ok(response);
+            } else if (response.getStatutCode() == 404) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            ReqRes errorResponse = new ReqRes();
+            errorResponse.setStatutCode(500);
+            errorResponse.setMessage("Unexpected error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
+
 
     @GetMapping("/adminuser/get-profile")
     public ResponseEntity<ReqRes> getMyProfile(){
