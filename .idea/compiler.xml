@@ -10,6 +10,7 @@
         <module name="config-server" />
         <module name="transaction-service" />
         <module name="discovery" />
+        <module name="gateway" />
       </profile>
       <profile name="Annotation profile for User-Auth-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -29,6 +30,7 @@
       <module name="User-Auth-service" options="-parameters" />
       <module name="config-server" options="-parameters" />
       <module name="discovery" options="-parameters" />
+      <module name="gateway" options="-parameters" />
       <module name="transaction-service" options="-parameters" />
     </option>
   </component>
