@@ -3,6 +3,7 @@ package com.User_Auth_service.controller;
 
 import com.User_Auth_service.dto.ReqRes;
 import com.User_Auth_service.model.User;
+import com.User_Auth_service.repository.UsersRepo;
 import com.User_Auth_service.service.UsersManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     private UsersManagementService usersManagementService;
+
+    @Autowired
+    private UsersRepo userRepository;
 
     @PostMapping("/auth/register")
     public ResponseEntity<ReqRes> regeister(@RequestBody ReqRes reg){
@@ -62,6 +67,13 @@ public class UserController {
     @DeleteMapping("/admin/delete/{userId}")
     public ResponseEntity<ReqRes> deleteUSer(@PathVariable Integer userId){
         return ResponseEntity.ok(usersManagementService.deleteUser(userId));
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(user);
     }
 
 
