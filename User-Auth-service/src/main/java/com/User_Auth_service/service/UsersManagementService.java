@@ -224,6 +224,43 @@ public class UsersManagementService {
         return reqRes;
 
     }
+
+    // Service Method to Change Password
+    public ReqRes changePassword(String oldPassword, String newPassword, String email) {
+        ReqRes resp = new ReqRes();
+        try {
+            // Find the user by email using Optional
+            Optional<User> userOptional = usersRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
+                // Check if the old password matches
+                if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                    resp.setStatutCode(400);
+                    resp.setMessage("Old password is incorrect");
+                    return resp;
+                }
+
+                // Update the password
+                user.setPassword(passwordEncoder.encode(newPassword));
+                usersRepo.save(user);
+
+                resp.setStatutCode(200);
+                resp.setMessage("Password updated successfully");
+                resp.setOurUsers(user);
+            } else {
+                resp.setStatutCode(404);
+                resp.setMessage("User not found");
+            }
+        } catch (Exception e) {
+            resp.setStatutCode(500);
+            resp.setError(e.getMessage());
+        }
+        return resp;
+    }
+
+
+
 }
 /*  for later to generate pwd
  public static String generateRandomString(int length) {

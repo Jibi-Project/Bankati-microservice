@@ -1,6 +1,7 @@
 package com.User_Auth_service.controller;
 
 
+import com.User_Auth_service.dto.ChangePasswordRequest;
 import com.User_Auth_service.dto.ReqRes;
 import com.User_Auth_service.model.User;
 import com.User_Auth_service.repository.UsersRepo;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/users")
@@ -91,5 +94,16 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<ReqRes> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            Principal principal) {
+        // `Principal` provides the logged-in user's email (or username)
+        String email = principal.getName();
+
+        ReqRes response = usersManagementService.changePassword(request.getOldPassword(), request.getNewPassword(), email);
+
+        return ResponseEntity.status(response.getStatutCode()).body(response);
+    }
 
 }
