@@ -106,4 +106,16 @@ public class UserController {
         return ResponseEntity.status(response.getStatutCode()).body(response);
     }
 
+    @PutMapping("/admin/lock/{id}")
+    public ResponseEntity<ReqRes> lockUser(@PathVariable Integer id) {
+        ReqRes response = usersManagementService.lockOrUnlockUser(id, true);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatutCode()));
+    }
+
+    @PutMapping("/admin/unlock/{id}")
+    public ResponseEntity<ReqRes> unlockUser(@PathVariable Integer id) {
+        ReqRes response = usersManagementService.lockOrUnlockUser(id, false);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatutCode()));
+    }
+
 }

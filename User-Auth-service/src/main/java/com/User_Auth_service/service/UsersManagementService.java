@@ -259,6 +259,30 @@ public class UsersManagementService {
         return resp;
     }
 
+    public ReqRes lockOrUnlockUser(Integer userId, boolean lock) {
+        ReqRes resp = new ReqRes();
+
+        try {
+            Optional<User> userOptional = usersRepo.findById(userId);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setAccountNonLocked(!lock); // Lock if `lock=true`, unlock if `lock=false`
+                usersRepo.save(user);
+
+                resp.setOurUsers(user);
+                resp.setMessage(lock ? "User account locked" : "User account unlocked");
+                resp.setStatutCode(200);
+            } else {
+                resp.setMessage("User not found");
+                resp.setStatutCode(404);
+            }
+        } catch (Exception e) {
+            resp.setError(e.getMessage());
+            resp.setStatutCode(500);
+        }
+
+        return resp;
+    }
 
 
 }
