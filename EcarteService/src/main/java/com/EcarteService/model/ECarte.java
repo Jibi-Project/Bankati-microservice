@@ -29,7 +29,14 @@ public class ECarte {
     @Column(nullable = false)
     private String cvv;
 
+    @Column(unique = true, nullable = false)
     private String emailUtilisateur;
+
+
+    private Double balance;
+
+    public Double getBalance(){return balance;}
+    public void setBalance(double balance){this.balance=balance;}
 
     public String getCvv() {
         return cvv;

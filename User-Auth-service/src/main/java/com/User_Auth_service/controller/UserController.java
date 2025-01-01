@@ -24,6 +24,13 @@ public class UserController {
     @Autowired
     private UsersRepo userRepository;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        return usersManagementService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/auth/register")
     public ResponseEntity<ReqRes> regeister(@RequestBody ReqRes reg){
         return ResponseEntity.ok(usersManagementService.register(reg));

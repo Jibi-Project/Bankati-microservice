@@ -26,6 +26,10 @@ public class UsersManagementService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public Optional<User> getUserById(int id) {
+        return usersRepo.findById(id);
+    }
+
 
     public ReqRes register(ReqRes registrationRequest){
         ReqRes resp = new ReqRes();
