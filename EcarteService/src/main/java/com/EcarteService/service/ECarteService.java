@@ -9,6 +9,7 @@ import com.EcarteService.model.User;
 import com.EcarteService.repository.ECarteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -50,10 +51,39 @@ public class ECarteService {
     }
 
     private String genererNumeroCarte() {
-        return "4000-" + (int) (Math.random() * 10000) + "-" + (int) (Math.random() * 10000) + "-" + (int) (Math.random() * 10000);
+        return "4000"
+                + (int) (Math.random() * 10000)
+                + (int) (Math.random() * 10000)
+                + (int) (Math.random() * 10000);
     }
 
     private String genererCvv() {
         return String.valueOf((int) (Math.random() * 900) + 100);
+    }
+
+
+    @Transactional
+    public String doTransaction(String senderNumeroCarte, String receiverNumeroCarte, Double amount) {
+        // Retrieve sender and receiver eCartes
+        ECarte sender = eCarteRepository.findByNumeroCarte(senderNumeroCarte)
+                .orElseThrow(() -> new RuntimeException("Sender card not found"));
+
+        ECarte receiver = eCarteRepository.findByNumeroCarte(receiverNumeroCarte)
+                .orElseThrow(() -> new RuntimeException("Receiver card not found"));
+
+        // Validate sufficient balance
+        if (sender.getBalance() == null || sender.getBalance() < amount) {
+            throw new RuntimeException("Insufficient balance on sender's card");
+        }
+
+        // Perform the transaction
+        sender.setBalance(sender.getBalance() - amount);
+        receiver.setBalance((receiver.getBalance() == null ? 0.0 : receiver.getBalance()) + amount);
+
+        // Save updated eCartes
+        eCarteRepository.save(sender);
+        eCarteRepository.save(receiver);
+
+        return "Transaction of " + amount + " from " + senderNumeroCarte + " to " + receiverNumeroCarte + " was successful.";
     }
 }

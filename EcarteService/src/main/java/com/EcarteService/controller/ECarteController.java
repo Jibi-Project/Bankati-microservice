@@ -6,10 +6,7 @@ import com.EcarteService.service.ECarteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -32,6 +29,20 @@ public class ECarteController {
             return ResponseEntity.ok(eCarte);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/transaction")
+    public ResponseEntity<String> doTransaction(@RequestBody Map<String, Object> payload) {
+        try {
+            String senderNumeroCarte = (String) payload.get("senderNumeroCarte");
+            String receiverNumeroCarte = (String) payload.get("receiverNumeroCarte");
+            Double amount = Double.valueOf(payload.get("amount").toString());
+
+            String result = eCarteService.doTransaction(senderNumeroCarte, receiverNumeroCarte, amount);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
