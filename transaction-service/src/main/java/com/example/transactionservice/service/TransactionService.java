@@ -14,7 +14,11 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public Transaction initiateTransaction(Long senderId, Long receiverId, Double amount, String description) {
+    public Transaction saveTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
+    }
+
+   /* public Transaction initiateTransaction(Long senderId, Long receiverId, Double amount, String description) {
         Transaction transaction = new Transaction();
         transaction.setSenderId(senderId);
         transaction.setReceiverId(receiverId);
@@ -44,5 +48,5 @@ public class TransactionService {
         transaction.setStatus("FAILED");
         transaction.setUpdatedAt(LocalDateTime.now());
         return transactionRepository.save(transaction);
-    }
+    }*/
 }

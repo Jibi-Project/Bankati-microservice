@@ -65,30 +65,7 @@ public class ECarteService {
     }
 
 
- /*   @Transactional
-    public String doTransaction(String senderNumeroCarte, String receiverNumeroCarte, Double amount) {
-        // Retrieve sender and receiver eCartes
-        ECarte sender = eCarteRepository.findByNumeroCarte(senderNumeroCarte)
-                .orElseThrow(() -> new RuntimeException("Sender card not found"));
 
-        ECarte receiver = eCarteRepository.findByNumeroCarte(receiverNumeroCarte)
-                .orElseThrow(() -> new RuntimeException("Receiver card not found"));
-
-        // Validate sufficient balance
-        if (sender.getBalance() == null || sender.getBalance() < amount) {
-            throw new RuntimeException("Insufficient balance on sender's card");
-        }
-
-        // Perform the transaction
-        sender.setBalance(sender.getBalance() - amount);
-        receiver.setBalance((receiver.getBalance() == null ? 0.0 : receiver.getBalance()) + amount);
-
-        // Save updated eCartes
-        eCarteRepository.save(sender);
-        eCarteRepository.save(receiver);
-
-        return "Transaction of " + amount + " from " + senderNumeroCarte + " to " + receiverNumeroCarte + " was successful.";
-    }*/
 
     @Transactional
     public String doTransaction(String senderNumeroCarte, String receiverNumeroCarte, Double amount) {
