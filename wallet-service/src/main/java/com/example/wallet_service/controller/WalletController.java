@@ -3,6 +3,7 @@ package com.example.wallet_service.controller;
 import com.example.wallet_service.dto.TransactionRequest;
 import com.example.wallet_service.dto.UserWalletResponse;
 import com.example.wallet_service.model.Wallet;
+import com.example.wallet_service.repository.WalletRepository;
 import com.example.wallet_service.service.WalletService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,20 @@ public class WalletController {
     @Autowired
     private WalletService walletService;
 
+    @Autowired
+    private WalletRepository walletRepository;
+
+    @GetMapping("/wallet/{id}")
+    public Wallet getWalletById(@PathVariable Long id) {
+        return walletService.getWalletById(id);
+    }
+
+
     @GetMapping("/{userId}")
     public Wallet getWallet(@PathVariable Long userId) {
         return walletService.getWalletByUserId(userId);
     }
+
 
 
     // New endpoint for just the balance
@@ -49,6 +60,18 @@ public class WalletController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/wallet/{id}")
+    public ResponseEntity<?> updateWalletBalance(@PathVariable Long id, @RequestBody Map<String, Double> request) {
+        Double newBalance = request.get("newBalance"); // Get newBalance from the request body
+        Wallet wallet = walletRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+        wallet.setBalance(newBalance);
+        walletRepository.save(wallet);
+        return ResponseEntity.ok("Balance updated successfully");
+    }
+
+
 
 
 //    @GetMapping("/details")

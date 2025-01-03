@@ -31,6 +31,11 @@ public class WalletService {
                 .orElseThrow(() -> new RuntimeException("Wallet not found"));
     }
 
+    public Wallet getWalletById(Long Id) {
+        return walletRepository.findById(Id)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+    }
+
     @Transactional
     public Wallet updateWalletBalance(Long userId, Double amount, String transactionType) {
         Wallet wallet = getWalletByUserId(userId);
