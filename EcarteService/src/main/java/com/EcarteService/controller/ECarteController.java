@@ -17,6 +17,19 @@ public class ECarteController {
     @Autowired
     private ECarteService eCarteService;
 
+
+    @PostMapping("/by-email")
+    public ResponseEntity<ECarte> getECarteByEmail(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+
+        try {
+            ECarte eCarte = eCarteService.getECarteByEmail(email);
+            return ResponseEntity.ok(eCarte);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PostMapping("/generer")
     public ResponseEntity<?> genererECarte(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
@@ -32,36 +45,27 @@ public class ECarteController {
         }
     }
 
-   /* @PostMapping("/transaction")
-    public ResponseEntity<String> doTransaction(@RequestBody Map<String, Object> payload) {
-        try {
-            String senderNumeroCarte = (String) payload.get("senderNumeroCarte");
-            String receiverNumeroCarte = (String) payload.get("receiverNumeroCarte");
-            Double amount = Double.valueOf(payload.get("amount").toString());
 
-            String result = eCarteService.doTransaction(senderNumeroCarte, receiverNumeroCarte, amount);
-            return ResponseEntity.ok(result);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }*/
    @PostMapping("/transaction")
    public ResponseEntity<String> doTransaction(@RequestBody Map<String, Object> payload) {
        String senderNumeroCarte = (String) payload.get("senderNumeroCarte");
        String receiverNumeroCarte = (String) payload.get("receiverNumeroCarte");
        Double amount = Double.valueOf(payload.get("amount").toString());
+       String description = (String) payload.get("description");
 
        System.out.println("Sender: " + senderNumeroCarte);
        System.out.println("Receiver: " + receiverNumeroCarte);
        System.out.println("Amount: " + amount);
+       System.out.println("Description: " + description);
 
        try {
-           String result = eCarteService.doTransaction(senderNumeroCarte, receiverNumeroCarte, amount);
+           String result = eCarteService.doTransaction(senderNumeroCarte, receiverNumeroCarte, amount, description);
            return ResponseEntity.ok(result);
        } catch (RuntimeException e) {
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
        }
    }
+
 
 
 
