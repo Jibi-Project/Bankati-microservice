@@ -5,6 +5,7 @@ import com.EcarteService.client.UserClient;
 import com.EcarteService.client.WalletClient;
 import com.EcarteService.model.BalanceResponse;
 import com.EcarteService.model.ECarte;
+import com.EcarteService.model.Transaction;
 import com.EcarteService.model.User;
 import com.EcarteService.repository.ECarteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class ECarteService {
 
     @Autowired
     private ECarteRepository eCarteRepository;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @Autowired
     private UserClient userClient;
@@ -68,7 +72,7 @@ public class ECarteService {
 
 
     @Transactional
-    public String doTransaction(String senderNumeroCarte, String receiverNumeroCarte, Double amount) {
+    public String doTransaction(String senderNumeroCarte, String receiverNumeroCarte, Double amount, String description) {
         // Retrieve sender and receiver eCartes
         ECarte sender = eCarteRepository.findByNumeroCarte(senderNumeroCarte)
                 .orElseThrow(() -> new RuntimeException("Sender card not found"));
@@ -93,10 +97,17 @@ public class ECarteService {
         request.put("newBalance", receiverWallet.getBalance() + amount);
         walletClient.updateWalletBalance(receiver.getWalletId(), request);
 
+        // Save transaction
+        Transaction transaction = new Transaction();
+        transaction.setSenderId(senderNumeroCarte);
+        transaction.setReceiverId(receiverNumeroCarte);
+        transaction.setAmount(amount);
+        transaction.setDescription(description);
+        transactionService.saveTransaction(transaction);
+
         // Return a success message
         return "Transaction of " + amount + " from " + senderNumeroCarte + " to " + receiverNumeroCarte + " was successful.";
     }
-
 
 
 }

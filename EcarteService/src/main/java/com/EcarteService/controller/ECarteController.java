@@ -50,18 +50,21 @@ public class ECarteController {
        String senderNumeroCarte = (String) payload.get("senderNumeroCarte");
        String receiverNumeroCarte = (String) payload.get("receiverNumeroCarte");
        Double amount = Double.valueOf(payload.get("amount").toString());
+       String description = (String) payload.get("description");
 
        System.out.println("Sender: " + senderNumeroCarte);
        System.out.println("Receiver: " + receiverNumeroCarte);
        System.out.println("Amount: " + amount);
+       System.out.println("Description: " + description);
 
        try {
-           String result = eCarteService.doTransaction(senderNumeroCarte, receiverNumeroCarte, amount);
+           String result = eCarteService.doTransaction(senderNumeroCarte, receiverNumeroCarte, amount, description);
            return ResponseEntity.ok(result);
        } catch (RuntimeException e) {
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
        }
    }
+
 
 
 
