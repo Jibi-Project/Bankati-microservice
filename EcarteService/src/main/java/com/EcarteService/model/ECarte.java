@@ -29,7 +29,23 @@ public class ECarte {
     @Column(nullable = false)
     private String cvv;
 
+    @Column(unique = true, nullable = false)
     private String emailUtilisateur;
+
+    private Long walletId;
+
+    public Long getWalletId() {
+        return walletId;
+    }
+
+    public void setWalletId(Long walletId) {
+        this.walletId = walletId;
+    }
+//
+//    private Double balance;
+//
+//    public Double getBalance(){return balance;}
+//    public void setBalance(double balance){this.balance=balance;}
 
     public String getCvv() {
         return cvv;

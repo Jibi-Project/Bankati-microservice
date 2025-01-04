@@ -1,10 +1,10 @@
 package com.User_Auth_service.controller;
 
 
+import com.User_Auth_service.dto.ChangePasswordRequest;
 import com.User_Auth_service.dto.ReqRes;
 import com.User_Auth_service.model.User;
 import com.User_Auth_service.repository.UsersRepo;
-import com.User_Auth_service.service.EmailService;
 import com.User_Auth_service.service.UsersManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/users")
@@ -24,21 +24,16 @@ public class UserController {
     @Autowired
     private UsersRepo userRepository;
 
-    @Autowired
-    private EmailService emailService;
-
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        return usersManagementService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<String> register(@RequestBody ReqRes reg) {
-        String generatedPassword = UUID.randomUUID().toString().substring(0, 8);
-        reg.setPassword(generatedPassword);
-
-        usersManagementService.register(reg);
-
-        String emailBody = "Welcome, " + reg.getNom() + "!\n\nYour temporary password is: " + generatedPassword;
-        emailService.sendEmail(reg.getEmail(), "Welcome to BankatiApp", emailBody);
-
-        return ResponseEntity.ok("User registered successfully. Password sent to email.");
+    public ResponseEntity<ReqRes> regeister(@RequestBody ReqRes reg){
+        return ResponseEntity.ok(usersManagementService.register(reg));
     }
 
     @PostMapping("/auth/login")
@@ -64,9 +59,24 @@ public class UserController {
     }
 
     @PutMapping("/admin/update/{userId}")
-    public ResponseEntity<ReqRes> updateUser(@PathVariable Integer userId, @RequestBody User reqres){
-        return ResponseEntity.ok(usersManagementService.updateUser(userId, reqres));
+    public ResponseEntity<ReqRes> updateUser(@PathVariable Integer userId, @RequestBody User updatedUser) {
+        try {
+            ReqRes response = usersManagementService.updateUser(userId, updatedUser);
+            if (response.getStatutCode() == 200) {
+                return ResponseEntity.ok(response);
+            } else if (response.getStatutCode() == 404) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            ReqRes errorResponse = new ReqRes();
+            errorResponse.setStatutCode(500);
+            errorResponse.setMessage("Unexpected error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
+
 
     @GetMapping("/adminuser/get-profile")
     public ResponseEntity<ReqRes> getMyProfile(){
@@ -90,25 +100,29 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(user);
     }
-    @PostMapping("/auth/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String newPassword = UUID.randomUUID().toString().substring(0, 8);
-        user.setPassword(newPassword);
-        userRepository.save(user);
+    @PostMapping("/change-password")
+    public ResponseEntity<ReqRes> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            Principal principal) {
+        // `Principal` provides the logged-in user's email (or username)
+        String email = principal.getName();
 
-        String emailBody = "Your new password is: " + newPassword;
-        emailService.sendEmail(email, "Password Reset", emailBody);
+        ReqRes response = usersManagementService.changePassword(request.getOldPassword(), request.getNewPassword(), email);
 
-        return ResponseEntity.ok("Password reset successfully. New password sent to email.");
+        return ResponseEntity.status(response.getStatutCode()).body(response);
     }
-    @GetMapping("/email-by-id/{userId}")
-    public ResponseEntity<String> getUserEmailById(@PathVariable Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return ResponseEntity.ok(user.getEmail());
+
+    @PutMapping("/admin/lock/{id}")
+    public ResponseEntity<ReqRes> lockUser(@PathVariable Integer id) {
+        ReqRes response = usersManagementService.lockOrUnlockUser(id, true);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatutCode()));
+    }
+
+    @PutMapping("/admin/unlock/{id}")
+    public ResponseEntity<ReqRes> unlockUser(@PathVariable Integer id) {
+        ReqRes response = usersManagementService.lockOrUnlockUser(id, false);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatutCode()));
     }
 
 }

@@ -26,6 +26,19 @@ public class User implements UserDetails {
     private String prenom;
     private String adresse;
     private String role;
+    private String telephone;
+
+    private Boolean accountNonLocked = true; // Default to true (unlocked)
+
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -44,7 +57,13 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return accountNonLocked;
+    }
+
+    // Other methods and fields remain unchanged
+
+    public void setAccountNonLocked(Boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
     }
 
     @Override

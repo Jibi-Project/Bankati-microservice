@@ -26,6 +26,10 @@ public class UsersManagementService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public Optional<User> getUserById(int id) {
+        return usersRepo.findById(id);
+    }
+
 
     public ReqRes register(ReqRes registrationRequest){
         ReqRes resp = new ReqRes();
@@ -37,7 +41,8 @@ public class UsersManagementService {
             ourUser.setRole(registrationRequest.getRole());
             ourUser.setNom(registrationRequest.getNom());
             ourUser.setPrenom(registrationRequest.getPrenom());
-
+            ourUser.setTelephone(registrationRequest.getTelephone());
+                //here should generate a pwd
             ourUser.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             User ourUsersResult = usersRepo.save(ourUser);
             if (ourUsersResult.getId()>0) {
@@ -165,19 +170,28 @@ public class UsersManagementService {
             Optional<User> userOptional = usersRepo.findById(userId);
             if (userOptional.isPresent()) {
                 User existingUser = userOptional.get();
-                existingUser.setEmail(updatedUser.getEmail());
-                existingUser.setNom(updatedUser.getNom());
-                existingUser.setPrenom(updatedUser.getPrenom());
 
-                existingUser.setAdresse(updatedUser.getAdresse());
-                existingUser.setRole(updatedUser.getRole());
-
-                // Check if password is present in the request
-                if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    // Encode the password and update it
-                    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                // Update fields only if they are provided (non-null or non-empty)
+                if (updatedUser.getEmail() != null && !updatedUser.getEmail().isEmpty()) {
+                    existingUser.setEmail(updatedUser.getEmail());
+                }
+                if (updatedUser.getNom() != null && !updatedUser.getNom().isEmpty()) {
+                    existingUser.setNom(updatedUser.getNom());
+                }
+                if (updatedUser.getPrenom() != null && !updatedUser.getPrenom().isEmpty()) {
+                    existingUser.setPrenom(updatedUser.getPrenom());
+                }
+                if (updatedUser.getTelephone() != null && !updatedUser.getTelephone().isEmpty()) {
+                    existingUser.setTelephone(updatedUser.getTelephone());
+                }
+                if (updatedUser.getAdresse() != null && !updatedUser.getAdresse().isEmpty()) {
+                    existingUser.setAdresse(updatedUser.getAdresse());
+                }
+                if (updatedUser.getRole() != null && !updatedUser.getRole().isEmpty()) {
+                    existingUser.setRole(updatedUser.getRole());
                 }
 
+                // Save the updated user
                 User savedUser = usersRepo.save(existingUser);
                 reqRes.setOurUsers(savedUser);
                 reqRes.setStatutCode(200);
@@ -214,4 +228,85 @@ public class UsersManagementService {
         return reqRes;
 
     }
+
+    // Service Method to Change Password
+    public ReqRes changePassword(String oldPassword, String newPassword, String email) {
+        ReqRes resp = new ReqRes();
+        try {
+            // Find the user by email using Optional
+            Optional<User> userOptional = usersRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
+                // Check if the old password matches
+                if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                    resp.setStatutCode(400);
+                    resp.setMessage("Old password is incorrect");
+                    return resp;
+                }
+
+                // Update the password
+                user.setPassword(passwordEncoder.encode(newPassword));
+                usersRepo.save(user);
+
+                resp.setStatutCode(200);
+                resp.setMessage("Password updated successfully");
+                resp.setOurUsers(user);
+            } else {
+                resp.setStatutCode(404);
+                resp.setMessage("User not found");
+            }
+        } catch (Exception e) {
+            resp.setStatutCode(500);
+            resp.setError(e.getMessage());
+        }
+        return resp;
+    }
+
+    public ReqRes lockOrUnlockUser(Integer userId, boolean lock) {
+        ReqRes resp = new ReqRes();
+
+        try {
+            Optional<User> userOptional = usersRepo.findById(userId);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setAccountNonLocked(!lock); // Lock if `lock=true`, unlock if `lock=false`
+                usersRepo.save(user);
+
+                resp.setOurUsers(user);
+                resp.setMessage(lock ? "User account locked" : "User account unlocked");
+                resp.setStatutCode(200);
+            } else {
+                resp.setMessage("User not found");
+                resp.setStatutCode(404);
+            }
+        } catch (Exception e) {
+            resp.setError(e.getMessage());
+            resp.setStatutCode(500);
+        }
+
+        return resp;
+    }
+
+
 }
+/*  for later to generate pwd
+ public static String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder randomString = new StringBuilder(length);
+        Random random = new Random();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            randomString.append(characters.charAt(index));
+        }
+
+        return randomString.toString();
+    }
+
+    public static void main(String[] args) {
+        String randomString = generateRandomString(8);
+        System.out.println("Random String: " + randomString);
+    }
+*
+* */

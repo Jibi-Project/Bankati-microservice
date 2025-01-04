@@ -10,13 +10,11 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long senderId;
-    private Long receiverId;
+    private String senderId;
+    private String receiverId;
     private Double amount;
-    private String status;  // e.g., "PENDING", "COMPLETED", "FAILED"
     private String description;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     // Getters and Setters
     public Long getId() {
@@ -27,19 +25,19 @@ public class Transaction {
         this.id = id;
     }
 
-    public Long getSenderId() {
+    public String getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Long senderId) {
+    public void setSenderId(String senderId) {
         this.senderId = senderId;
     }
 
-    public Long getReceiverId() {
+    public String getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(Long receiverId) {
+    public void setReceiverId(String receiverId) {
         this.receiverId = receiverId;
     }
 
@@ -51,13 +49,6 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public String getDescription() {
         return description;
@@ -74,12 +65,10 @@ public class Transaction {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+
 }

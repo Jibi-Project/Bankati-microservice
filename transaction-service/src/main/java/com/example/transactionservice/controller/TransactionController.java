@@ -3,19 +3,25 @@ package com.example.transactionservice.controller;
 import com.example.transactionservice.model.Transaction;
 import com.example.transactionservice.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
+    @PostMapping("/save")
+    public ResponseEntity<Transaction> saveTransaction(@RequestBody Transaction transaction) {
+        Transaction savedTransaction = transactionService.saveTransaction(transaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    }
 
-    @PostMapping("/initiate")
+  /*  @PostMapping("/initiate")
     public ResponseEntity<Transaction> initiateTransaction(@RequestBody Transaction transaction) {
         Transaction newTransaction = transactionService.initiateTransaction(
                 transaction.getSenderId(), transaction.getReceiverId(), transaction.getAmount(), transaction.getDescription());
@@ -38,5 +44,5 @@ public class TransactionController {
     public ResponseEntity<Transaction> failTransaction(@PathVariable Long transactionId) {
         Transaction transaction = transactionService.failTransaction(transactionId);
         return ResponseEntity.ok(transaction);
-    }
+    }*/
 }
