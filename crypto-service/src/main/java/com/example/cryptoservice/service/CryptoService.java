@@ -18,6 +18,8 @@ public class CryptoService {
     private final CryptoExchangeService cryptoExchangeService;
     private final CryptoTransactionRepository transactionRepository;
 
+
+
     @Autowired
     public CryptoService(CryptoExchangeService cryptoExchangeService, CryptoTransactionRepository transactionRepository) {
         this.cryptoExchangeService = cryptoExchangeService;

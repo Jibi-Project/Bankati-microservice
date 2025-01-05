@@ -24,6 +24,11 @@ public class UserController {
     @Autowired
     private UsersRepo userRepository;
 
+    @GetMapping("/count-user-role")
+    public long getNumberOfUsersWithRoleUser() {
+        return usersManagementService.getNumberOfUsersWithRoleUser();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         return usersManagementService.getUserById(id)

@@ -26,6 +26,10 @@ public class UsersManagementService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public long getNumberOfUsersWithRoleUser() {
+        return usersRepo.countUsersWithRoleUser();
+    }
+
     public Optional<User> getUserById(int id) {
         return usersRepo.findById(id);
     }

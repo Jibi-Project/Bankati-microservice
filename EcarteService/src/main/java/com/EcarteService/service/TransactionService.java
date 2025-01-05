@@ -5,6 +5,11 @@ import com.EcarteService.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 public class TransactionService {
 
@@ -15,35 +20,25 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-   /* public Transaction initiateTransaction(Long senderId, Long receiverId, Double amount, String description) {
-        Transaction transaction = new Transaction();
-        transaction.setSenderId(senderId);
-        transaction.setReceiverId(receiverId);
-        transaction.setAmount(amount);
-        transaction.setStatus("PENDING");
-        transaction.setDescription(description);
-        transaction.setCreatedAt(LocalDateTime.now());
-        transaction.setUpdatedAt(LocalDateTime.now());
-        return transactionRepository.save(transaction);
+    public List<Transaction> getAllTransactions() {
+        return transactionRepository.findAll();
     }
 
-    public List<Transaction> getTransactionHistory(Long userId) {
-        return transactionRepository.findBySenderId(userId);
+    public List<Transaction> getTransactionsBySenderId(String senderId) {
+        return transactionRepository.findBySenderId(senderId);
     }
 
-    public Transaction completeTransaction(Long transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
-        transaction.setStatus("COMPLETED");
-        transaction.setUpdatedAt(LocalDateTime.now());
-        return transactionRepository.save(transaction);
+    public Map<LocalDate, Long> getTransactionsPerDay() {
+        return transactionRepository.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getCreatedAt().toLocalDate(),
+                        Collectors.counting()
+                ));
     }
 
-    public Transaction failTransaction(Long transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
-        transaction.setStatus("FAILED");
-        transaction.setUpdatedAt(LocalDateTime.now());
-        return transactionRepository.save(transaction);
-    }*/
+    public Double getAverageTransactionAmount() {
+        return transactionRepository.findAverageTransactionAmount();
+    }
+
 }
