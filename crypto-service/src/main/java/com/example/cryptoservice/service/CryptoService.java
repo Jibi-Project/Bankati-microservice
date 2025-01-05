@@ -26,13 +26,14 @@ public class CryptoService {
         this.transactionRepository = transactionRepository;
     }
 
-    public Map<String, Object> buyCrypto(BuyCryptoRequest request) {
+    public Map<String, Object> buyCrypto(Long userId, BuyCryptoRequest request) {
         Map<String, Object> exchangeRate = cryptoExchangeService.getExchangeRate(request.getCrypto(), request.getFiat());
         Double rate = (Double) ((Map<String, Object>) exchangeRate.get(request.getCrypto())).get(request.getFiat());
         Double cryptoAmount = cryptoExchangeService.calculateCryptoPurchase(request.getAmount(), rate);
 
+        // Create and save transaction with the provided userId
         CryptoTransaction transaction = new CryptoTransaction();
-        transaction.setUserId(1L);
+        transaction.setUserId(userId); // Set the dynamic userId
         transaction.setCryptoName(request.getCrypto());
         transaction.setAmount(cryptoAmount);
         transaction.setTransactionType(TransactionType.BUY);
@@ -42,6 +43,7 @@ public class CryptoService {
 
         return Map.of("cryptoAmount", cryptoAmount, "rate", rate);
     }
+
 
     public Map<String, Object> sellCrypto(SellCryptoRequest request) {
         Map<String, Object> exchangeRate = cryptoExchangeService.getExchangeRate(request.getCrypto(), request.getFiat());
