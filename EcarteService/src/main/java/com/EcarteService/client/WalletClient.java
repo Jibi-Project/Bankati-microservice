@@ -17,6 +17,13 @@ public interface WalletClient {
     @GetMapping("/{userId}")
     BalanceResponse getBalanceByUserId(@PathVariable("userId") Integer userId);
 
+    @PostMapping("/wallet/deduct/{userId}")
+    void deductBalance(@PathVariable Long userId, @RequestParam Double amount);
 
-}
+    @PostMapping("/wallet/add/{userId}")
+    void addBalance(@PathVariable Long userId, @RequestParam Double amount);
+    }
+
+
+
 

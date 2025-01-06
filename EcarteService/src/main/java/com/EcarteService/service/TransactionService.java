@@ -4,6 +4,10 @@ import com.EcarteService.model.Transaction;
 import com.EcarteService.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -11,10 +15,16 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private EmailService emailService;
+
     public Transaction saveTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
-
+}
    /* public Transaction initiateTransaction(Long senderId, Long receiverId, Double amount, String description) {
         Transaction transaction = new Transaction();
         transaction.setSenderId(senderId);
@@ -46,4 +56,3 @@ public class TransactionService {
         transaction.setUpdatedAt(LocalDateTime.now());
         return transactionRepository.save(transaction);
     }*/
-}

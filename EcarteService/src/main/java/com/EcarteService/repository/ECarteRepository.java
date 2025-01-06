@@ -12,5 +12,7 @@ public interface ECarteRepository extends JpaRepository<ECarte, Long> {
 
     Optional<ECarte> findByEmailUtilisateur(String email);
     Optional<ECarte> findByNumeroCarte(String numeroCarte);
+    Optional<ECarte> findByNomClient(String nomClient);
+    Optional<ECarte> findByWalletId(Long walletId); // Assuming walletId represents the user ID
 
 }

@@ -1,6 +1,5 @@
 package com.EcarteService.service;
 
-
 import com.EcarteService.client.UserClient;
 import com.EcarteService.client.WalletClient;
 import com.EcarteService.model.BalanceResponse;
@@ -32,6 +31,9 @@ public class ECarteService {
     @Autowired
     private WalletClient walletClient;
 
+    @Autowired
+    private EmailService emailService;
+
     public ECarte genererECarte(String email) {
         Optional<ECarte> existingECarte = eCarteRepository.findByEmailUtilisateur(email);
         if (existingECarte.isPresent()) {
@@ -43,8 +45,7 @@ public class ECarteService {
 
         // Retrieve wallet balance
         BalanceResponse balanceResponse = walletClient.getBalanceByUserId(utilisateur.getId());
-       // Double balance = balanceResponse.getBalance();
-        Long walletid=balanceResponse.getId();
+        Long walletId = balanceResponse.getId();
 
         ECarte eCarte = new ECarte();
         eCarte.setNumeroCarte(genererNumeroCarte());
@@ -52,7 +53,7 @@ public class ECarteService {
         eCarte.setCvv(genererCvv());
         eCarte.setEmailUtilisateur(utilisateur.getEmail());
         eCarte.setNomClient(utilisateur.getNom());
-        eCarte.setWalletId(walletid); // Set the balance from Wallet service
+        eCarte.setWalletId(walletId);
 
         return eCarteRepository.save(eCarte);
     }
@@ -72,10 +73,6 @@ public class ECarteService {
         return eCarteRepository.findByEmailUtilisateur(email)
                 .orElseThrow(() -> new RuntimeException("ECarte not found for the provided email: " + email));
     }
-
-
-
-
 
     @Transactional
     public String doTransaction(String senderNumeroCarte, String receiverNumeroCarte, Double amount, String description) {
@@ -111,9 +108,43 @@ public class ECarteService {
         transaction.setDescription(description);
         transactionService.saveTransaction(transaction);
 
+        // Send email notifications
+        sendTransactionEmails(sender, receiver, amount, description);
+
         // Return a success message
         return "Transaction of " + amount + " from " + senderNumeroCarte + " to " + receiverNumeroCarte + " was successful.";
     }
+
+    private void sendTransactionEmails(ECarte sender, ECarte receiver, Double amount, String description) {
+        // Email for sender
+        emailService.sendTransactionCompletionEmail(
+                sender.getEmailUtilisateur(),
+                amount,
+                sender.getNumeroCarte(),
+                receiver.getNumeroCarte(),
+                description
+        );
+
+        // Email for receiver
+        emailService.sendTransactionCompletionEmail(
+                receiver.getEmailUtilisateur(),
+                amount,
+                sender.getNumeroCarte(),
+                receiver.getNumeroCarte(),
+                description
+        );
+    }
+    public ECarte getECarteByUserId(Long userId) {
+        return eCarteRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("ECarte not found for user ID: " + userId));
+    }
+
+
+    public ECarte getECarteByServiceName(String serviceName) {
+        return eCarteRepository.findByEmailUtilisateur(serviceName)
+                .orElseThrow(() -> new RuntimeException("ECarte not found for service: " + serviceName));
+    }
+
 
 
 }
