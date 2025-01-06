@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,29 +24,24 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
     }
 
-
-  /*  @PostMapping("/initiate")
-    public ResponseEntity<Transaction> initiateTransaction(@RequestBody Transaction transaction) {
-        Transaction newTransaction = transactionService.initiateTransaction(
-                transaction.getSenderId(), transaction.getReceiverId(), transaction.getAmount(), transaction.getDescription());
-        return ResponseEntity.ok(newTransaction);
+    @GetMapping("alltrans")
+    public List<Transaction> getAllTransactions() {
+        return transactionService.getAllTransactions();
+    }
+    @GetMapping("/by-sender")
+    public List<Transaction> getTransactionsBySenderId(@RequestParam String senderId) {
+        return transactionService.getTransactionsBySenderId(senderId);
     }
 
-    @GetMapping("/history/{userId}")
-    public ResponseEntity<List<Transaction>> getTransactionHistory(@PathVariable Long userId) {
-        List<Transaction> transactions = transactionService.getTransactionHistory(userId);
-        return ResponseEntity.ok(transactions);
+    @GetMapping("/per-day")
+    public Map<LocalDate, Long> getTransactionsPerDay() {
+        return transactionService.getTransactionsPerDay();
     }
 
-    @PutMapping("/complete/{transactionId}")
-    public ResponseEntity<Transaction> completeTransaction(@PathVariable Long transactionId) {
-        Transaction transaction = transactionService.completeTransaction(transactionId);
-        return ResponseEntity.ok(transaction);
+    @GetMapping("/average-amount")
+    public Double getAverageTransactionAmount() {
+        return transactionService.getAverageTransactionAmount();
     }
 
-    @PutMapping("/fail/{transactionId}")
-    public ResponseEntity<Transaction> failTransaction(@PathVariable Long transactionId) {
-        Transaction transaction = transactionService.failTransaction(transactionId);
-        return ResponseEntity.ok(transaction);
-    }*/
+
 }

@@ -22,7 +22,16 @@ public class Creancier {
     private String nom;
     private String img;
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     private String type ;
+    private String email;
 
     // Getter and Setter for id
     public Long getId() {

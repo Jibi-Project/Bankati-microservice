@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/crypto")
 public class CryptoController {
@@ -29,6 +30,7 @@ public class CryptoController {
         String crypto = ((String) request.get("crypto")).toLowerCase();
         String fiat = ((String) request.get("fiat")).toLowerCase();
         Double amount = ((Number) request.get("amount")).doubleValue();
+        Long userId = ((Number) request.get("userId")).longValue(); // Extract userId from the request
 
         // Fetch exchange rate
         Map<String, Object> exchangeRate = cryptoExchangeService.getExchangeRate(crypto, fiat);
@@ -38,7 +40,7 @@ public class CryptoController {
 
         // Create and save transaction
         CryptoTransaction transaction = new CryptoTransaction();
-        transaction.setUserId(1L); // Replace with actual user ID
+        transaction.setUserId(userId); // Use the dynamic userId
         transaction.setCryptoName(crypto);
         transaction.setAmount(cryptoAmount);
         transaction.setTransactionType(TransactionType.BUY);
