@@ -14,6 +14,9 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:4200")
 
 
+
+@CrossOrigin(origins = "http://localhost:4200")
+
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
