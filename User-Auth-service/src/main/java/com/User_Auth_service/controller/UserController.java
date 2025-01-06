@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+
+@CrossOrigin(origins = "http://localhost:4200")
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
