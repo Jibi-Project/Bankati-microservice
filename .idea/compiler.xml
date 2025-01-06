@@ -8,21 +8,30 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
-        <module name="transaction-service" />
+        <module name="User-Auth-service" />
         <module name="discovery" />
+        <module name="transaction-service" />
         <module name="gateway" />
-        <module name="crypto-service" />
+        <module name="wallet-service" />
       </profile>
-      <profile name="Annotation profile for wallet-service" enabled="true">
+      <profile name="Annotation profile for EcarteService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="EcarteService" />
+      </profile>
+      <profile name="Annotation profile for crypto-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
-        <module name="EcarteService" />
-        <module name="User-Auth-service" />
-        <module name="wallet-service" />
+        <module name="crypto-service" />
         <module name="notifications-server" />
       </profile>
     </annotationProcessing>
@@ -32,7 +41,7 @@
       <module name="EcarteService" options="-parameters" />
       <module name="User-Auth-service" options="-parameters" />
       <module name="config-server" options="-parameters" />
-      <module name="crypto-service" options="" />
+      <module name="crypto-service" options="-parameters" />
       <module name="discovery" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="notifications-server" options="-parameters" />
