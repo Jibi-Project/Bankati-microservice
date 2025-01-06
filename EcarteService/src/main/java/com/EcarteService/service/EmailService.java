@@ -61,7 +61,7 @@ public class EmailService {
         String message = String.format(
                 "Dear User,\n\nYour transaction has been successfully completed.\n\n" +
                         "Details:\n" +
-                        "- Amount: $%.2f\n" +
+                        "- Amount: %.2f DH\n" +
                         "- Sender Card: %s\n" +
                         "- Receiver Card: %s\n" +
                         "- Description: %s\n\n" +

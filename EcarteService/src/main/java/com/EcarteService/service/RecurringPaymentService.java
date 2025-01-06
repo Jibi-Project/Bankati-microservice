@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class RecurringPaymentService {
@@ -53,5 +54,13 @@ public class RecurringPaymentService {
 
         return "Recurring payment added and first transaction completed: " + transactionResult;
     }
-
+    public List<RecurringPayment> getAllRecurringPayments() {
+        return recurringPaymentRepository.findAll();
+    }
+    public void deleteRecurringPayment(Long id) {
+        if (!recurringPaymentRepository.existsById(id)) {
+            throw new RuntimeException("Recurring payment not found with ID: " + id);
+        }
+        recurringPaymentRepository.deleteById(id);
+    }
 }
