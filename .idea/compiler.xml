@@ -11,8 +11,9 @@
         <module name="transaction-service" />
         <module name="discovery" />
         <module name="gateway" />
+        <module name="crypto-service" />
       </profile>
-      <profile name="Annotation profile for crypto-service" enabled="true">
+      <profile name="Annotation profile for wallet-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -21,8 +22,8 @@
         </processorPath>
         <module name="EcarteService" />
         <module name="User-Auth-service" />
-        <module name="crypto-service" />
         <module name="wallet-service" />
+        <module name="notifications-server" />
       </profile>
     </annotationProcessing>
   </component>
@@ -31,9 +32,10 @@
       <module name="EcarteService" options="-parameters" />
       <module name="User-Auth-service" options="-parameters" />
       <module name="config-server" options="-parameters" />
-      <module name="crypto-service" options="-parameters" />
+      <module name="crypto-service" options="" />
       <module name="discovery" options="-parameters" />
       <module name="gateway" options="-parameters" />
+      <module name="notifications-server" options="-parameters" />
       <module name="transaction-service" options="-parameters" />
       <module name="wallet-service" options="-parameters" />
     </option>
