@@ -6,6 +6,7 @@ import com.example.cryptoservice.entity.TransactionType;
 import com.example.cryptoservice.repository.CryptoTransactionRepository;
 import com.example.cryptoservice.service.CryptoExchangeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,20 +28,35 @@ public class CryptoController {
     }
     @PostMapping("/buy")
     public ResponseEntity<?> buyCrypto(@RequestBody Map<String, Object> request) {
-        String crypto = ((String) request.get("crypto")).toLowerCase();
-        String fiat = ((String) request.get("fiat")).toLowerCase();
-        Double amount = ((Number) request.get("amount")).doubleValue();
-        Long userId = ((Number) request.get("userId")).longValue(); // Extract userId from the request
+        // Vérification des paramètres requis dans la requête
+        String crypto = (String) request.get("crypto");
+        String fiat = (String) request.get("fiat");
+        Number amountObj = (Number) request.get("amount");
+        Number userIdObj = (Number) request.get("userId");
 
-        // Fetch exchange rate
+        if (crypto == null || fiat == null || amountObj == null || userIdObj == null) {
+            return ResponseEntity.badRequest().body("Missing required parameters: crypto, fiat, amount, or userId");
+        }
+
+        // Traitement des données
+        crypto = crypto.toLowerCase();
+        fiat = fiat.toLowerCase();
+        Double amount = amountObj.doubleValue();
+        Long userId = userIdObj.longValue(); // Extraire le userId
+
+        // Récupérer le taux de change
         Map<String, Object> exchangeRate = cryptoExchangeService.getExchangeRate(crypto, fiat);
+        if (exchangeRate == null || !exchangeRate.containsKey("rate")) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exchange rate not found for crypto: " + crypto + " and fiat: " + fiat);
+        }
         Double rate = (Double) exchangeRate.get("rate");
 
+        // Calculer le montant en crypto
         Double cryptoAmount = cryptoExchangeService.calculateCryptoPurchase(amount, rate);
 
-        // Create and save transaction
+        // Créer et enregistrer la transaction
         CryptoTransaction transaction = new CryptoTransaction();
-        transaction.setUserId(userId); // Use the dynamic userId
+        transaction.setUserId(userId);
         transaction.setCryptoName(crypto);
         transaction.setAmount(cryptoAmount);
         transaction.setTransactionType(TransactionType.BUY);
@@ -50,7 +66,6 @@ public class CryptoController {
 
         return ResponseEntity.ok(Map.of("cryptoAmount", cryptoAmount, "rate", rate));
     }
-
 
     @PostMapping("/sell")
     public ResponseEntity<?> sellCrypto(@RequestBody CryptoRequest request) {

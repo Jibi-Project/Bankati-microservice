@@ -85,5 +85,25 @@ public class WalletController {
         return walletService.getAllWallets();
     }
 
+    @PutMapping("/{userId}/updateBalance")
+    public ResponseEntity<String> updateBalance(
+            @PathVariable Long userId,
+            @RequestParam String action,
+            @RequestParam Double amount) {
+        try {
+            Wallet wallet = walletRepository.findByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("Wallet not found for userId: " + userId));
+
+            wallet.updateBalance(action, amount);
+            walletRepository.save(wallet);
+
+            return ResponseEntity.ok("Balance updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating balance");
+        }
+    }
+
 }
 

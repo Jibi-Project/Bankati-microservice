@@ -45,4 +45,17 @@ public class Wallet {
     public void setBalance(Double balance) {
         this.balance = balance;
     }
+
+    public void updateBalance(String action, Double amount) {
+        if (action.equalsIgnoreCase("buy")) {
+            if (balance < amount) {
+                throw new IllegalArgumentException("Insufficient balance");
+            }
+            this.balance -= amount;
+        } else if (action.equalsIgnoreCase("sell")) {
+            this.balance += amount;
+        } else {
+            throw new IllegalArgumentException("Invalid action. Use 'buy' or 'sell'.");
+        }
+    }
 }
