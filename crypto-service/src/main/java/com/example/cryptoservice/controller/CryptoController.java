@@ -5,6 +5,7 @@ import com.example.cryptoservice.entity.CryptoTransaction;
 import com.example.cryptoservice.entity.TransactionType;
 import com.example.cryptoservice.repository.CryptoTransactionRepository;
 import com.example.cryptoservice.service.CryptoExchangeService;
+import com.example.cryptoservice.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,23 @@ import java.util.Map;
 public class CryptoController {
 
     private final CryptoExchangeService cryptoExchangeService;
+    private final CryptoService transactionService;
+
     private final CryptoTransactionRepository transactionRepository;
 
     @Autowired
-    public CryptoController(CryptoExchangeService cryptoExchangeService, CryptoTransactionRepository transactionRepository) {
+    public CryptoController(CryptoExchangeService cryptoExchangeService, CryptoService transactionService,
+    CryptoTransactionRepository transactionRepository) {
         this.cryptoExchangeService = cryptoExchangeService;
         this.transactionRepository = transactionRepository;
+        this.transactionService = transactionService;
+
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CryptoTransaction>> getTransactionsByUserId(@PathVariable Long userId) {
+        List<CryptoTransaction> transactions = transactionService.getTransactionsByUserId(userId);
+        return ResponseEntity.ok(transactions);
     }
     @PostMapping("/buy")
     public ResponseEntity<?> buyCrypto(@RequestBody Map<String, Object> request) {

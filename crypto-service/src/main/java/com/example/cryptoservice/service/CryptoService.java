@@ -81,4 +81,10 @@ public class CryptoService {
     public List<CryptoTransaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
+
+
+    public List<CryptoTransaction> getTransactionsByUserId(Long userId) {
+        return transactionRepository.findByUserId(userId);
+    }
+
 }
