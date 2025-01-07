@@ -68,27 +68,41 @@ public class CryptoController {
     }
 
     @PostMapping("/sell")
-    public ResponseEntity<?> sellCrypto(@RequestBody CryptoRequest request) {
-        // Convert crypto and fiat to lowercase
-        String crypto = request.getCrypto().toLowerCase();
-        String fiat = request.getFiat().toLowerCase();
+    public ResponseEntity<?> sellCrypto(@RequestBody Map<String, Object> request) {
+        // Extract parameters from the request
+        String crypto = (String) request.get("crypto");
+        String fiat = (String) request.get("fiat");
+        Number amountObj = (Number) request.get("amount");
+        Number userIdObj = (Number) request.get("userId");
+
+        // Validate required parameters
+        if (crypto == null || fiat == null || amountObj == null || userIdObj == null) {
+            return ResponseEntity.badRequest().body("Missing required parameters: crypto, fiat, amount, or userId");
+        }
+
+        // Process input
+        crypto = crypto.toLowerCase();
+        fiat = fiat.toLowerCase();
+        Double amount = amountObj.doubleValue();
+        Long userId = userIdObj.longValue(); // Extract userId
 
         // Fetch exchange rate
         Map<String, Object> exchangeRate = cryptoExchangeService.getExchangeRate(crypto, fiat);
 
         // Validate exchange rate
         if (exchangeRate == null || !exchangeRate.containsKey("rate")) {
-            return ResponseEntity.badRequest().body("Invalid crypto or fiat currency.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exchange rate not found for crypto: " + crypto + " and fiat: " + fiat);
         }
-
         Double rate = (Double) exchangeRate.get("rate");
-        Double fiatAmount = cryptoExchangeService.calculateCryptoSale(request.getAmount(), rate);
+
+        // Calculate fiat amount for sale
+        Double fiatAmount = cryptoExchangeService.calculateCryptoSale(amount, rate);
 
         // Create and save transaction
         CryptoTransaction transaction = new CryptoTransaction();
-        transaction.setUserId(1L); // Replace with actual user ID
+        transaction.setUserId(userId); // Use provided userId
         transaction.setCryptoName(crypto);
-        transaction.setAmount(request.getAmount());
+        transaction.setAmount(amount);
         transaction.setTransactionType(TransactionType.SELL);
         transaction.setRate(rate);
         transaction.setFiatCurrency(fiat);
@@ -96,6 +110,7 @@ public class CryptoController {
 
         return ResponseEntity.ok(Map.of("fiatAmount", fiatAmount, "rate", rate));
     }
+
 
     @PostMapping("/convert")
     public ResponseEntity<?> convert(@RequestBody CryptoRequest request) {
